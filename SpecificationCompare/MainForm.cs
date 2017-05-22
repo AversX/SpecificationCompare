@@ -104,7 +104,7 @@ namespace SpecificationCompare
             OldUnits.AddRange(LoadDataSpec(oldVerTxt.Text));
 
             List<Unit> NewUnits = new List<Unit>();
-            NewUnits.AddRange(LoadDataSpec(oldVerTxt.Text));
+            NewUnits.AddRange(LoadDataSpec(newVerTxt.Text));
 
             Units = Consolidate(OldUnits, NewUnits);
             UploadData(Units);
@@ -259,7 +259,7 @@ namespace SpecificationCompare
                                         ErrorCode = 1,
                                         OldValue = oldUnits[i].Article
                                     });
-                                    unit.Name = newUnits[j].Article;
+                                    unit.Article = newUnits[j].Article;
                                 }
                                 if (oldUnits[i].Number != newUnits[j].Number)
                                 {
@@ -375,15 +375,12 @@ namespace SpecificationCompare
                 }
             for (int j = 0; j < newUnits.Count; j++)
             {
-                oldUnits.Insert(oldUnits.Count-1, newUnits[j]);
-                Unit unit = oldUnits[oldUnits.Count - 1];
+                Unit unit = newUnits[j];
                 List<Error> errors = new List<Error>();
                 errors.Add(new Error() { ErrorCode = 7 });
                 if (unit.Errors == null) unit.Errors = new List<Error>(errors);
                 else unit.Errors.AddRange(errors);
-                oldUnits[oldUnits.Count - 1] = unit;
-                newUnits.RemoveAt(j);
-                j--;
+                oldUnits.Add(unit);
             }
             return oldUnits;
         }
@@ -436,20 +433,28 @@ namespace SpecificationCompare
                     autoFit = (Excel.Range)sheet.Columns[j];
                     autoFit.AutoFit();
                 }
-                for (int j = 0; j < units[i].Errors.Count; j++)
+                if (units[i].Errors != null)
                 {
-                    switch(units[i].Errors[j].ErrorCode)
+                    for (int j = 0; j < units[i].Errors.Count; j++)
                     {
-                        case 0: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 1: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 2: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 3: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 4: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 5: { sheet.Cells[i + 1, 1].Color = Color.Red; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 6: { sheet.Cells[i + 1, 1].Color = Color.Blue; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
-                        case 7: { sheet.Cells[i + 1, 1].Color = Color.Yellow; sheet.Cells[i + 1, 1].Comment.Shape.TextFrame.Characters().Text = ""; break; }
+                        switch (units[i].Errors[j].ErrorCode)
+                        {
+                            case 6: { ((Excel.Range)sheet.Rows[i + 1]).EntireRow.Interior.Color = Color.Blue; break; }
+                            case 7: { ((Excel.Range)sheet.Rows[i + 1]).EntireRow.Interior.Color = Color.Green; break; }
+                            default:
+                                {
+                                    sheet.Cells[i + 1, units[i].Errors[j].ErrorCode + 1].Interior.Color = Color.Red;
+                                    ((Excel.Range)sheet.Cells[i + 1, units[i].Errors[j].ErrorCode + 1]).AddComment(units[i].Errors[j].OldValue);
+                                    break;
+                                }
+                        }
                     }
                 }
+                else
+                {
+                    ((Excel.Range)sheet.Rows[i + 1]).EntireRow.Interior.Color = Color.Yellow;
+                }
+                
             }
             excel.Visible = true;
         }
