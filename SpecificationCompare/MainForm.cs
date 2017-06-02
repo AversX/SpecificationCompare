@@ -11,7 +11,7 @@ namespace SpecificationCompare
 {
     struct Unit
     {
-        string group;
+        string pos;
         string article;
         string name;
         string number;
@@ -27,7 +27,7 @@ namespace SpecificationCompare
         public string Measure { get => measure; set => measure = value; }
         public string Name { get => name; set => name = value; }
         public string Article { get => article; set => article = value; }
-        public string Group { get => group; set => group = value; }
+        public string Pos { get => pos; set => pos = value; }
         public string Number { get => number; set => number = value; }
         public bool Finded { get => finded; set => finded = value; }
         internal List<Error> Errors { get => errors; set => errors = value; }
@@ -132,12 +132,12 @@ namespace SpecificationCompare
                 {
                     Unit unit = new Unit()
                     {
-                        Group = dataSet.Tables[0].Rows[row][0].ToString().Trim(),
-                        Article = dataSet.Tables[0].Rows[row][1].ToString().Trim(),
-                        Name = dataSet.Tables[0].Rows[row][2].ToString().Trim(),
-                        Number = dataSet.Tables[0].Rows[row][3].ToString().Trim(),
-                        Measure = dataSet.Tables[0].Rows[row][4].ToString().Trim(),
-                        Manufacture = dataSet.Tables[0].Rows[row][5].ToString().Trim(),
+                        Pos = dataSet.Tables[0].Rows[row][1].ToString().Trim(),
+                        Article = dataSet.Tables[0].Rows[row][2].ToString().Trim(),
+                        Name = dataSet.Tables[0].Rows[row][3].ToString().Trim(),
+                        Number = dataSet.Tables[0].Rows[row][4].ToString().Trim(),
+                        Measure = dataSet.Tables[0].Rows[row][5].ToString().Trim(),
+                        Manufacture = dataSet.Tables[0].Rows[row][6].ToString().Trim(),
                         Finded = false
                     };
                     units.Add(unit);
@@ -171,14 +171,14 @@ namespace SpecificationCompare
                             {
                                 Unit unit = oldUnits[i];
                                 List<Error> errors = new List<Error>();
-                                if (oldUnits[i].Group != newUnits[j].Group)
+                                if (oldUnits[i].Pos != newUnits[j].Pos)
                                 {
                                     errors.Add(new Error
                                     {
                                         ErrorCode = 0,
-                                        OldValue = oldUnits[i].Group
+                                        OldValue = oldUnits[i].Pos
                                     });
-                                    unit.Group = newUnits[j].Group;
+                                    unit.Pos = newUnits[j].Pos;
                                 }
                                 if (oldUnits[i].Name != newUnits[j].Name)
                                 {
@@ -243,14 +243,14 @@ namespace SpecificationCompare
                             {
                                 Unit unit = oldUnits[i];
                                 List<Error> errors = new List<Error>();
-                                if (oldUnits[i].Group != newUnits[j].Group)
+                                if (oldUnits[i].Pos != newUnits[j].Pos)
                                 {
                                     errors.Add(new Error
                                     {
                                         ErrorCode = 0,
-                                        OldValue = oldUnits[i].Group
+                                        OldValue = oldUnits[i].Pos
                                     });
-                                    unit.Group = newUnits[j].Group;
+                                    unit.Pos = newUnits[j].Pos;
                                 }
                                 if (oldUnits[i].Article != newUnits[j].Article)
                                 {
@@ -318,14 +318,14 @@ namespace SpecificationCompare
                             {
                                 Unit unit = oldUnits[i];
                                 List<Error> errors = new List<Error>();
-                                if (oldUnits[i].Group != newUnits[j].Group)
+                                if (oldUnits[i].Pos != newUnits[j].Pos)
                                 {
                                     errors.Add(new Error
                                     {
                                         ErrorCode = 0,
-                                        OldValue = oldUnits[i].Group
+                                        OldValue = oldUnits[i].Pos
                                     });
-                                    unit.Group = newUnits[j].Group;
+                                    unit.Pos = newUnits[j].Pos;
                                 }
                                 if (oldUnits[i].Article != newUnits[j].Article)
                                 {
@@ -394,7 +394,8 @@ namespace SpecificationCompare
             Excel.Range autoFit;
 
             int curColumn = 1;
-            //sheet.Cells[1, curColumn] = "Группа";
+
+            //sheet.Cells[1, curColumn] = "Поз.";
             sheet.Columns[curColumn].NumberFormat = "@";
             curColumn++;
 
@@ -420,7 +421,7 @@ namespace SpecificationCompare
 
             for (int i = 0; i < units.Count; i++)
             {
-                sheet.Cells[i + 1, curColumn - 6] = units[i].Group;
+                sheet.Cells[i + 1, curColumn - 6] = units[i].Pos;
                 sheet.Cells[i + 1, curColumn - 5] = units[i].Article;
                 sheet.Cells[i + 1, curColumn - 4] = units[i].Name;
                 sheet.Cells[i + 1, curColumn - 3] = units[i].Number;
